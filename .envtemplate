@@ -1,0 +1,6 @@
+SECRET_KEY=your_secret_key_here
+ALGORITHM=your_algorithm_here
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+MONGO_DETAILS=mongodb://your_encoded_username:your_encoded_password@mongo:27017/your_database
+MONGO_URL=mongodb://your_encoded_username:your_encoded_password@mongo:27017/your_database

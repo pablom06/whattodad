@@ -1,0 +1,90 @@
+services:
+  forums_activities:
+    build:
+      context: ./backend/forums_activities
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001
+    volumes:
+      - ./backend/forums_activities/app:/app
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./.env
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - FRONTEND_URL=http://frontend:3000,http://localhost:3000
+      - PYTHONPATH=/app
+
+  auth_profile_admin:
+    build:
+      context: ./backend/auth_profile_admin
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8002
+    volumes:
+      - ./backend/auth_profile_admin/app:/app
+      - ./backend/auth_profile_admin/app/some/directory:/app/some/directory
+    ports:
+      - "8002:8002"
+    env_file:
+      - ./.env
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - FRONTEND_URL=http://frontend:3000,http://localhost:3000
+      - PYTHONPATH=/app
+
+  chat_rooms:
+    build:
+      context: ./backend/chat_rooms
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8003
+    volumes:
+      - ./backend/chat_rooms:/app
+    ports:
+      - "8003:8003"
+    env_file:
+      - ./.env
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - FRONTEND_URL=http://frontend:3000,http://localhost:3000
+      - PYTHONPATH=/app
+
+  celebrations_dadness:
+    build:
+      context: ./backend/celebrations_dadness
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8004
+    volumes:
+      - ./backend/celebrations_dadness/app:/app
+    ports:
+      - "8004:8004"
+    env_file:
+      - ./.env
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - FRONTEND_URL=http://frontend:3000,http://localhost:3000
+      - PYTHONPATH=/app
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - forums_activities
+      - auth_profile_admin
+      - chat_rooms
+      - celebrations_dadness
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+    environment:
+      - REACT_APP_API_URL=http://localhost:8003/api
+      - REACT_APP_AUTH_URL=http://localhost:8002/api
+      - REACT_APP_FORUMS_URL=http://localhost:8001/api
+      - REACT_APP_CELEBRATIONS_URL=http://localhost:8004/api
+
+networks:
+  default:
+    name: whattodad_network
+      - auth_profile_data:/app/some/directory
+
+volumes:
+  mongodb_data:
+  auth_profile_data:
